@@ -1,5 +1,6 @@
 from urllib import request
-from flask import Flask, request
+import uuid
+from flask import Flask, request, make_response, render_template, abort, redirect, session
 from flask_api import status
 import pyautogui
 import qrcode
@@ -26,25 +27,46 @@ allowed_keys = [
     'num7', 'num8', 'num9'
 ]
 
+
+server_auth_data = str(uuid.uuid4().hex)
+
 @app.route('//')
 def root():
+    auth_data = request.cookies.get('auth')
+    if not auth_data:
+        abort(404)
+    if auth_data != server_auth_data:
+        abort(404)
     return app.send_static_file('index.html')
 
 @app.route('/keypress', methods=['PUT'])
 def keypress():
-    key = request.args.get('key')
-    # TODO
-    # Get key
-    # Get auth guid
-    # Press key
+    auth_data = request.cookies.get('auth')
+    if not auth_data:
+        abort(404)
+    if auth_data != server_auth_data:
+        abort(404)
 
+    key = request.args.get('key')
     if not key in allowed_keys:
-        return "", status.HTTP_200_OK
+        abort(404)
 
     pyautogui.keyDown(key)
     time.sleep(0.002)
     pyautogui.keyUp(key)
     return "", status.HTTP_200_OK
+
+@app.route('/pair', methods=['GET'])
+def pair():
+    auth_data = request.args.get('auth')
+    if not auth_data:
+        abort(404)
+    if auth_data != server_auth_data:
+        abort(404)
+    
+    resp = make_response(redirect('/'))
+    resp.set_cookie('auth', auth_data)
+    return resp
 
 def get_server_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -60,7 +82,6 @@ def get_server_ip():
     return ip
 
 def show_pairing_gui(qr_img, qr_data, sentinel):
-
     temp_img = tempfile.NamedTemporaryFile(delete=False)
     b = io.BytesIO()
     qr_img.save(b, format='PNG')
@@ -98,7 +119,7 @@ if __name__ == '__main__':
     # Locally, use qr to point mobile to server
     # TODO: And pass over an auth token for the session!
     server_port = 8080
-    qr_data = f"http://{get_server_ip()}:{server_port}"
+    qr_data = f"http://{get_server_ip()}:{server_port}/pair?auth={server_auth_data}"
     qr_img = qrcode.make(qr_data)
 
     sentinel = Event()
