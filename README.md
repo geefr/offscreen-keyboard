@@ -2,7 +2,19 @@
 
 A quick hack to run a numpad on my phone, as my laptop doesn't have one
 
-**NOTE**: This is completely insecure, exposing it to the internet would be a bad idea
+Known Issues:
+* Communication is unencrypted (HTTP)
+  * But there's at least a session cookie
+* I've only tested this on Windows so far
+
+# Usage
+
+* Download the latest release
+* Run the executable
+* Scan the QR code on a phone/tablet
+* When finished, close the desktop window to shutdown the server
+
+# Building
 
 Requirements:
 * Python
