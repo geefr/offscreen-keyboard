@@ -15,10 +15,15 @@ from PIL import Image
 import PySimpleGUI as psg
 from threading import Thread, Event
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
 app = Flask(
-    "numpad-backend",
+    "offscreen-keyboard",
     static_url_path="",
-    static_folder="../frontend/build"
+    static_folder=resource_path("static")
 )
 
 allowed_keys = [
@@ -91,9 +96,9 @@ def show_pairing_gui(qr_img, qr_data, sentinel):
 
     layout = [
         [psg.Text("Scan code to connect")],
-        [psg.Text("Close window to shut down server")],
+        # [psg.Text("Close window to shut down server")],
         [psg.Image(img_path)],
-        [psg.Text(f"Server URL: {qr_data}")],
+        # [psg.Text(f"Server URL: {qr_data}")],
     ]
     win = psg.Window(
         title="Offscreen Keyboard", 
@@ -118,7 +123,7 @@ def show_pairing_gui(qr_img, qr_data, sentinel):
 if __name__ == '__main__':
     # Locally, use qr to point mobile to server
     # TODO: And pass over an auth token for the session!
-    server_port = 8080
+    server_port = 56165
     qr_data = f"http://{get_server_ip()}:{server_port}/pair?auth={server_auth_data}"
     qr_img = qrcode.make(qr_data)
 
