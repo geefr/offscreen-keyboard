@@ -27,7 +27,7 @@ function App() {
         <button class="numpad-button" onClick={() => {apiPressKey('num1')}}>1</button>
         <button class="numpad-button" onClick={() => {apiPressKey('num2')}}>2</button>
         <button class="numpad-button" onClick={() => {apiPressKey('num3')}}>3</button>
-        <button class="numpad-button"></button>
+        <button class="numpad-button" onClick={() => {apiPressKey('backspace')}}>⌫</button>
       {/* </div> */}
       <button class="numpad-button"></button>
         <button class="numpad-button" onClick={() => {apiPressKey('num0')}}>0</button>

@@ -10,6 +10,12 @@ app = Flask(
     static_folder="../frontend/build"
 )
 
+allowed_keys = [
+    '/', '*', '-', '+', '.', 'enter', 'backspace',
+    'num0', 'num1', 'num2', 'num3', 'num4', 'num5', 'num6',
+    'num7', 'num8', 'num9'
+]
+
 @app.route('//')
 def root():
     return app.send_static_file('index.html')
@@ -17,11 +23,14 @@ def root():
 @app.route('/keypress', methods=['PUT'])
 def keypress():
     key = request.args.get('key')
-    print(f"Pressing key: {key}")
     # TODO
     # Get key
     # Get auth guid
     # Press key
+
+    if not key in allowed_keys:
+        return "", status.HTTP_200_OK
+
     pyautogui.keyDown(key)
     time.sleep(0.002)
     pyautogui.keyUp(key)
