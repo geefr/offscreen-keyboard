@@ -1,8 +1,10 @@
+##
+
 from urllib import request
 import uuid
 from flask import Flask, request, make_response, render_template, abort, redirect, session
 from flask_api import status
-import pyautogui
+import keyboard
 import qrcode
 import sys
 import os
@@ -28,8 +30,8 @@ app = Flask(
 
 allowed_keys = [
     '/', '*', '-', '+', '.', 'enter', 'backspace',
-    'num0', 'num1', 'num2', 'num3', 'num4', 'num5', 'num6',
-    'num7', 'num8', 'num9'
+    'num 0', 'num 1', 'num 2', 'num 3', 'num 4', 'num 5', 'num 6',
+    'num 7', 'num 8', 'num 9'
 ]
 
 
@@ -56,9 +58,7 @@ def keypress():
     if not key in allowed_keys:
         abort(404)
 
-    pyautogui.keyDown(key)
-    time.sleep(0.002)
-    pyautogui.keyUp(key)
+    keyboard.press_and_release(key)
     return "", status.HTTP_200_OK
 
 @app.route('/pair', methods=['GET'])
